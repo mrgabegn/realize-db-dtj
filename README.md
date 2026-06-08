@@ -93,8 +93,8 @@ Antes de executar o projeto, é necessário ter instalado:
 ### 1. Clonar o repositório
 
 ```bash id="e2li0y"
-git clone <url-do-repositorio>
-cd <nome-do-projeto>
+git clone https://github.com/mrgabegn/realize-db-dtj.git
+cd realize-db-dtj
 ```
 
 ### 2. Subir o PostgreSQL com Docker Compose
