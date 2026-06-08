@@ -66,40 +66,46 @@ public class TransferServiceImpl implements TransferService {
         Account from = accountsById.get(request.fromAccountId());
         Account to = accountsById.get(request.toAccountId());
 
+        if (from == null || to == null) {
+            throw new AccountNotFoundException("Conta de origem ou destino não encontrada");
+        }
+
+        BigDecimal amount = request.amount();
+
         Transfer transfer = Transfer.create(
-                request.fromAccountId(),
-                request.toAccountId(),
-                request.amount()
+                from.getId(),
+                to.getId(),
+                amount
         );
 
-        transfer.markAsCompleted();
-
-        transferRepository.save(transfer);
-
-        UUID transferId = transfer.getId();
-
-        from.debit(request.amount());
-        to.credit(request.amount());
+        from.debit(amount);
+        to.credit(amount);
 
         accountRepository.save(from);
         accountRepository.save(to);
+
+        transfer.markAsCompleted();
+        transferRepository.save(transfer);
+
+        UUID transferId = transfer.getId();
+        Instant now = Instant.now();
 
         Movement debit = new Movement(
                 UUID.randomUUID(),
                 from.getId(),
                 MovementType.DEBIT,
-                request.amount(),
+                amount,
                 transferId,
-                Instant.now()
+                now
         );
 
         Movement credit = new Movement(
                 UUID.randomUUID(),
                 to.getId(),
                 MovementType.CREDIT,
-                request.amount(),
+                amount,
                 transferId,
-                Instant.now()
+                now
         );
 
         movementRepository.saveAll(List.of(debit, credit));
@@ -108,7 +114,7 @@ public class TransferServiceImpl implements TransferService {
                 transferId,
                 from.getId(),
                 to.getId(),
-                request.amount()
+                amount
         ));
 
         return new TransferResponse(transferId, "TRANSFER_COMPLETED");
