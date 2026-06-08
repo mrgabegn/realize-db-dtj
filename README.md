@@ -238,7 +238,7 @@ Exemplo de resposta:
 }
 ```
 
-### Consultar Movimentações da Conta
+### Consultar Movimentações da Conta por ID da conta
 
 ```http id="ar4j30"
 GET /accounts/{id}/movements
